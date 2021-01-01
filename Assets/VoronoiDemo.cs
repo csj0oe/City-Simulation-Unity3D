@@ -7,9 +7,10 @@ public class VoronoiDemo : MonoBehaviour
 {
 
     public Material land;
-    public const int NPOINTS = 200;
-    public const int WIDTH = 200;
-    public const int HEIGHT = 200;
+	public GameObject road;
+    public const int NPOINTS = 2000;
+    public const int WIDTH = 1000;
+    public const int HEIGHT = 1000;
 	public float freqx = 0.02f, freqy = 0.018f, offsetx = 0.43f, offsety = 0.22f;
 
     private List<Vector2> m_points;
@@ -62,6 +63,10 @@ public class VoronoiDemo : MonoBehaviour
 			Vector2 left = (Vector2)seg.p0;
 			Vector2 right = (Vector2)seg.p1;
 			DrawLine (pixels,left, right,color);
+			Vector2 dir = (right - left)/WIDTH*100; 
+			float a = Vector2.SignedAngle(Vector2.right, right - left);
+			GameObject go = Instantiate(road, new Vector3(left.y/WIDTH*100-100/2, 0, left.x/HEIGHT*100-100/2), Quaternion.Euler(0,a+90,0));
+			go.transform.localScale = new Vector3(dir.magnitude, 1, 1);
 		}
 
 		/* Shows Delaunay triangulation */
