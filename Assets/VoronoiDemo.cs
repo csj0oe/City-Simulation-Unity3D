@@ -7,30 +7,82 @@ public class VoronoiDemo : MonoBehaviour
 {
 
     public Material land;
+    public int NPOINTS = 2000, WIDTH = 1000, HEIGHT = 1000;
 	public GameObject road;
-    public const int NPOINTS = 2000;
-    public const int WIDTH = 1000;
-    public const int HEIGHT = 1000;
+	public GameObject roadsParent;
 	public float freqx = 0.02f, freqy = 0.018f, offsetx = 0.43f, offsety = 0.22f;
-
+	public GameObject house;
+	public GameObject housesParent;
+	public Material workMaterial;
+	public float spaceBetweenHouses = 0.3f;
+	private float [,] map;
     private List<Vector2> m_points;
 	private List<LineSegment> m_edges = null;
 	private List<LineSegment> m_spanningTree;
 	private List<LineSegment> m_delaunayTriangulation;
 	private Texture2D tx;
 
-	private float [,] createMap() 
-    {
-        float [,] map = new float[WIDTH, HEIGHT];
-        for (int i = 0; i < WIDTH; i++)
-            for (int j = 0; j < HEIGHT; j++)
-                map[i, j] = Mathf.PerlinNoise(freqx * i + offsetx, freqy * j + offsety);
-        return map;
-    }
+	private void generateHouses() {
+		for (int i = 0; i < roadsParent.transform.childCount; i++) {
+			Transform rd = roadsParent.transform.GetChild(i);
+			
+			float shiftBy1, shiftBy2 = 0;
+			int j = 1;
+			while (shiftBy2 < rd.transform.localScale.x - (house.transform.GetChild(0).localScale.z * 2) ) {
+				shiftBy1 = (rd.transform.GetChild(0).localScale.z/2);
+				shiftBy2 = (house.transform.GetChild(0).localScale.z + spaceBetweenHouses) * j;
+				createHouse(rd, shiftBy1, shiftBy2, false);
+				createHouse(rd, shiftBy1, shiftBy2, true);
+				j++;
+			}
+		}
+	}
+
+	private void createHouse(Transform rd, float shiftBy1, float shiftBy2, bool otherSide) {
+		GameObject new_house_2 = Instantiate(house);
+		if (otherSide) new_house_2.transform.rotation = rd.transform.rotation * Quaternion.Euler(new Vector3(0, 180, 0));
+		else           new_house_2.transform.rotation = rd.transform.rotation;
+		new_house_2.transform.position = rd.transform.position;
+		// move it next to the road (not on top of it)
+		new_house_2.transform.position = new_house_2.transform.position + ( new_house_2.transform.forward * shiftBy1 );
+		// move it to the correct position on the road
+		if (otherSide) new_house_2.transform.position = new_house_2.transform.position + (  new_house_2.transform.right * shiftBy2 );
+		else           new_house_2.transform.position = new_house_2.transform.position + ( -new_house_2.transform.right * shiftBy2 );
+		Vector3 poss = new_house_2.transform.position;
+		Vector3    pos = new_house_2.transform.GetChild(0).position;
+		Vector3    hSz = new_house_2.transform.GetChild(0).localScale/2;
+		Quaternion rot = new_house_2.transform.rotation;
+		Destroy(new_house_2);
+		if (!Physics.CheckBox(pos, hSz, rot)) {
+			Road data = rd.GetComponent("Road") as Road;
+			int zoneType = data.zoneType;
+			if (zoneType == 2) return; // empty zone
+			int houseSize = ( zoneType > 0 ) ? 10 : 1;
+			GameObject new_house_3 = Instantiate(house);
+			new_house_3.transform.parent = housesParent.transform;
+			new_house_3.transform.rotation = rot;
+			new_house_3.transform.position = poss;
+			if (houseSize > 1) {
+				new_house_3.transform.localScale = new_house_3.transform.localScale + new Vector3(0, houseSize, 0);
+				changeMaterial(new_house_3, workMaterial);
+			}
+		} else {
+			Collider[] x = Physics.OverlapBox(pos, hSz, rot);
+			print(x[0].name);
+		}
+	}
+
+	private void changeMaterial(GameObject house, Material mat)
+	{
+		for (int i = 0; i < house.transform.childCount; i++)
+		{
+			house.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material = mat;
+		}
+	}
 
 	void Start ()
 	{
-        float [,] map=createMap();
+        map=createMap();
         Color[] pixels = createPixelMap(map);
 
         /* Create random points points */
@@ -40,7 +92,7 @@ public class VoronoiDemo : MonoBehaviour
 			int x = Random.Range(0, WIDTH-1);
 			int y = Random.Range(0, HEIGHT-1);
 			int iter = 0;
-			while (iter < 10 && map[x,y] < 0.7) {
+			while (iter < 3 && map[x,y] < 0.7) {
 				x = Random.Range(0, WIDTH-1);
 				y = Random.Range(0, HEIGHT-1);
 				iter++;
@@ -59,14 +111,35 @@ public class VoronoiDemo : MonoBehaviour
 		/* Shows Voronoi diagram */
 		Color color = Color.blue;
 		for (int i = 0; i < m_edges.Count; i++) {
-			LineSegment seg = m_edges [i];				
+			LineSegment seg = m_edges[i];				
 			Vector2 left = (Vector2)seg.p0;
 			Vector2 right = (Vector2)seg.p1;
-			DrawLine (pixels,left, right,color);
+			//DrawLine (pixels,left, right,color);
 			Vector2 dir = (right - left)/WIDTH*100; 
 			float a = Vector2.SignedAngle(Vector2.right, right - left);
 			GameObject go = Instantiate(road, new Vector3(left.y/WIDTH*100-100/2, 0, left.x/HEIGHT*100-100/2), Quaternion.Euler(0,a+90,0));
 			go.transform.localScale = new Vector3(dir.magnitude, 1, 1);
+			go.transform.parent = roadsParent.transform;
+			// set the zone type : 1 - work / 0 - home / 2 - nothing
+			if ( Mathf.RoundToInt(seg.p0.Value.x) >= 0 && Mathf.RoundToInt(seg.p0.Value.x) < WIDTH &&
+				 Mathf.RoundToInt(seg.p0.Value.y) >= 0 && Mathf.RoundToInt(seg.p0.Value.y) < HEIGHT &&
+				 Mathf.RoundToInt(seg.p1.Value.x) >= 0 && Mathf.RoundToInt(seg.p1.Value.x) < WIDTH &&
+				 Mathf.RoundToInt(seg.p1.Value.y) >= 0 && Mathf.RoundToInt(seg.p1.Value.y) < HEIGHT &&
+				 map[Mathf.RoundToInt(seg.p0.Value.x), Mathf.RoundToInt(seg.p0.Value.y)] > 0.7 &&
+				 map[Mathf.RoundToInt(seg.p1.Value.x), Mathf.RoundToInt(seg.p1.Value.y)] > 0.7 ) {
+					Road go_data = go.GetComponent("Road") as Road;
+					go_data.zoneType = 1;
+				 }
+			else if ( Mathf.RoundToInt(seg.p0.Value.x) >= 0 && Mathf.RoundToInt(seg.p0.Value.x) < WIDTH &&
+				 Mathf.RoundToInt(seg.p0.Value.y) >= 0 && Mathf.RoundToInt(seg.p0.Value.y) < HEIGHT &&
+				 Mathf.RoundToInt(seg.p1.Value.x) >= 0 && Mathf.RoundToInt(seg.p1.Value.x) < WIDTH &&
+				 Mathf.RoundToInt(seg.p1.Value.y) >= 0 && Mathf.RoundToInt(seg.p1.Value.y) < HEIGHT &&
+				 map[Mathf.RoundToInt(seg.p0.Value.x), Mathf.RoundToInt(seg.p0.Value.y)] > 0.5 &&
+				 map[Mathf.RoundToInt(seg.p1.Value.x), Mathf.RoundToInt(seg.p1.Value.y)] > 0.5 ) {
+					Road go_data = go.GetComponent("Road") as Road;
+					go_data.zoneType = 2;
+				 }
+				 
 		}
 
 		/* Shows Delaunay triangulation */
@@ -99,9 +172,18 @@ public class VoronoiDemo : MonoBehaviour
 		tx.SetPixels (pixels);
 		tx.Apply ();
 
+		/* Generate Buildings */
+		generateHouses();
 	}
 
-
+	private float [,] createMap() 
+    {
+        float [,] map = new float[WIDTH, HEIGHT];
+        for (int i = 0; i < WIDTH; i++)
+            for (int j = 0; j < HEIGHT; j++)
+                map[i, j] = Mathf.PerlinNoise(freqx * i + offsetx, freqy * j + offsety);
+        return map;
+    }
 
     /* Functions to create and draw on a pixel array */
     private Color[] createPixelMap(float[,] map)
