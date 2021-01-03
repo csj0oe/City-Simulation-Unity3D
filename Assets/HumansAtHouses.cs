@@ -31,16 +31,21 @@ public class HumansAtHouses : MonoBehaviour
 
 	private void createHuman(GameObject hs) {
 			Vector3 pos = hs.transform.position + ( hs.transform.forward * ( road.transform.GetChild(0).localScale.z/3 ) );
-			UnityEngine.AI.NavMeshAgent new_human = Instantiate(agent, pos, Quaternion.identity);
-			new_human.transform.parent = HumansParent.transform;
-			//new_human.transform.position = hs.transform.position + ( hs.transform.forward * ( road.transform.GetChild(0).localScale.z/3 ) );
-			new_human.GetComponent<Click>().cam = GetComponent<Camera>();
-			//new_human.GetComponent<click>().general = script;
+			NavMeshAgent new_human = Instantiate(agent, pos, Quaternion.identity, HumansParent.transform);
+			new_human.GetComponent<Click>().cam = cam;
+            new_human.GetComponent<HumanBrain>().HouseLight = HouseLight;
+            new_human.GetComponent<HumanBrain>().HouseDark = HouseDark;
+            new_human.GetComponent<HumanBrain>().WorkLight = WorkLight;
+            new_human.GetComponent<HumanBrain>().WorkDark = WorkDark;
+			new_human.GetComponent<HumanBrain>().StartBuilding = hs;
+            int randomWorkplace = Random.Range(0, WorkplacesParent.transform.childCount);
+            new_human.GetComponent<HumanBrain>().EndBuilding = WorkplacesParent.transform.GetChild(randomWorkplace).gameObject;
+            new_human.GetComponent<HumanBrain>().AgentState = 1;
 	}
 
     private void changeMaterial(GameObject obj, Material mat)
 	{
-		for (int i = 0; i < house.transform.childCount; i++)
+		for (int i = 0; i < obj.transform.childCount; i++)
 		{
 			obj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material = mat;
 		}
@@ -50,7 +55,7 @@ public class HumansAtHouses : MonoBehaviour
     void Update()
     {
         if (VoronoiDemo.gameState == 0) {
-            print(housesParent.transform.childCount);
+            //print(housesParent.transform.childCount);
             for (int i = 0; i < housesParent.transform.childCount; i++) {
                 //print("change");
                 Transform hs = housesParent.transform.GetChild(i);
@@ -66,7 +71,7 @@ public class HumansAtHouses : MonoBehaviour
             } else if (Timer == 0) {
                 for (int i = 0; i < housesParent.transform.childCount; i++) {
                     Transform hs = housesParent.transform.GetChild(i);
-                    changeMaterial(hs.gameObject, HouseDark);
+                    //changeMaterial(hs.gameObject, HouseDark);
                     createHuman(hs.gameObject);
                 }
                 VoronoiDemo.gameState = 2;
