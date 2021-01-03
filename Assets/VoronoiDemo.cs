@@ -14,6 +14,7 @@ public class VoronoiDemo : MonoBehaviour
 	public float freqx = 0.02f, freqy = 0.018f, offsetx = 0.43f, offsety = 0.22f;
 	public GameObject house;
 	public GameObject housesParent;
+	public GameObject WorkplacesParent;
 	public Material workMaterial;
 	public float spaceBetweenHouses = 0.3f;
 	public NavMeshSurface surface;
@@ -41,32 +42,34 @@ public class VoronoiDemo : MonoBehaviour
 	}
 
 	private void createHouse(Transform rd, float shiftBy1, float shiftBy2, bool otherSide) {
-		GameObject new_house_2 = Instantiate(house);
-		if (otherSide) new_house_2.transform.rotation = rd.transform.rotation * Quaternion.Euler(new Vector3(0, 180, 0));
-		else           new_house_2.transform.rotation = rd.transform.rotation;
-		new_house_2.transform.position = rd.transform.position;
+		GameObject new_house_precalc = Instantiate(house);
+		if (otherSide) new_house_precalc.transform.rotation = rd.transform.rotation * Quaternion.Euler(new Vector3(0, 180, 0));
+		else           new_house_precalc.transform.rotation = rd.transform.rotation;
+		new_house_precalc.transform.position = rd.transform.position;
 		// move it next to the road (not on top of it)
-		new_house_2.transform.position = new_house_2.transform.position + ( new_house_2.transform.forward * shiftBy1 );
+		new_house_precalc.transform.position = new_house_precalc.transform.position + ( new_house_precalc.transform.forward * shiftBy1 );
 		// move it to the correct position on the road
-		if (otherSide) new_house_2.transform.position = new_house_2.transform.position + (  new_house_2.transform.right * shiftBy2 );
-		else           new_house_2.transform.position = new_house_2.transform.position + ( -new_house_2.transform.right * shiftBy2 );
-		Vector3 poss = new_house_2.transform.position;
-		Vector3    pos = new_house_2.transform.GetChild(0).position;
-		Vector3    hSz = new_house_2.transform.GetChild(0).localScale/2;
-		Quaternion rot = new_house_2.transform.rotation;
-		Destroy(new_house_2);
+		if (otherSide) new_house_precalc.transform.position = new_house_precalc.transform.position + (  new_house_precalc.transform.right * shiftBy2 );
+		else           new_house_precalc.transform.position = new_house_precalc.transform.position + ( -new_house_precalc.transform.right * shiftBy2 );
+		Vector3 poss = new_house_precalc.transform.position;
+		// TODO better calculation
+		Vector3    pos = new_house_precalc.transform.GetChild(0).position;
+		Vector3    hSz = new_house_precalc.transform.GetChild(0).localScale/2;
+		Quaternion rot = new_house_precalc.transform.rotation;
+		Destroy(new_house_precalc);
 		if (!Physics.CheckBox(pos, hSz, rot)) {
 			Road data = rd.GetComponent("Road") as Road;
 			int zoneType = data.zoneType;
 			if (zoneType == 2) return; // empty zone
 			int houseSize = ( zoneType > 0 ) ? 10 : 1;
-			GameObject new_house_3 = Instantiate(house);
-			new_house_3.transform.parent = housesParent.transform;
-			new_house_3.transform.rotation = rot;
-			new_house_3.transform.position = poss;
+			GameObject new_house_final = Instantiate(house);
+			new_house_final.transform.parent = housesParent.transform;
+			new_house_final.transform.rotation = rot;
+			new_house_final.transform.position = poss;
 			if (houseSize > 1) {
-				new_house_3.transform.localScale = new_house_3.transform.localScale + new Vector3(0, houseSize, 0);
-				changeMaterial(new_house_3, workMaterial);
+				new_house_final.transform.localScale = new_house_final.transform.localScale + new Vector3(0, houseSize, 0);
+				changeMaterial(new_house_final, workMaterial);
+				new_house_final.transform.parent = WorkplacesParent.transform;
 			}
 		} else {
 			Collider[] x = Physics.OverlapBox(pos, hSz, rot);
