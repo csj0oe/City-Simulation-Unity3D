@@ -12,10 +12,8 @@ public class HumanBrain : MonoBehaviour
 
     public int AgentState = 0; // 0-disabled / 1-started / 2-running
 
-    public Material HouseLight;
-    public Material HouseDark;
-    public Material WorkLight;
-    public Material WorkDark;
+    public Material StartDarkMat;
+    public Material EndLightMat;
 
     private NavMeshAgent agent;
 
@@ -27,23 +25,23 @@ public class HumanBrain : MonoBehaviour
 		}
 	}
 
-    void Awake()
-    {  
-
+    public void timeOut() {
+        agent.Warp(EndBuilding.transform.position);
     }
 
     // Update is called once per frame
     void Update()
     {
         if (AgentState == 1) {
-            agent = GetComponent<NavMeshAgent> ();   
-            changeMaterial(StartBuilding, HouseDark);
+            agent = GetComponent<NavMeshAgent>();   
+            changeMaterial(StartBuilding, StartDarkMat);
             agent.destination = EndBuilding.transform.position;
             agent.isStopped = false;
             AgentState = 2;
         } else if (AgentState == 2) {
             if ((agent.transform.position - agent.destination).magnitude < 1.0f) {
-                changeMaterial(EndBuilding, WorkLight);
+                EndBuilding.GetComponent<Building>().humanHouses.Push(StartBuilding);
+                changeMaterial(EndBuilding, EndLightMat);
                 AgentState = 0;
                 Destroy(agent.gameObject);
             }

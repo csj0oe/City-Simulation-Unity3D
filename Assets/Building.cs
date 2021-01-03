@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Road : MonoBehaviour
+public class Building : MonoBehaviour
 {
-    public int zoneType = 0;
+    public Stack<GameObject> humanHouses = new Stack<GameObject>();
 
     // Start is called before the first frame update
     void Start()

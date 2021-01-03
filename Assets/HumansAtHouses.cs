@@ -18,10 +18,9 @@ public class HumansAtHouses : MonoBehaviour
     public Material HouseLight;
     public Material HouseDark;
     public Material WorkLight;
-    public Material WorkDark;
-
-    private int Timer = -1;
-    public int DelayToStartDay = 100;
+    private float Timer = -1f;
+    public int DelayToStartDay = 3;
+    public int DelayForMovement = 30;
 
     // Start is called before the first frame update
     void Start()
@@ -33,10 +32,8 @@ public class HumansAtHouses : MonoBehaviour
 			Vector3 pos = hs.transform.position + ( hs.transform.forward * ( road.transform.GetChild(0).localScale.z/3 ) );
 			NavMeshAgent new_human = Instantiate(agent, pos, Quaternion.identity, HumansParent.transform);
 			new_human.GetComponent<Click>().cam = cam;
-            new_human.GetComponent<HumanBrain>().HouseLight = HouseLight;
-            new_human.GetComponent<HumanBrain>().HouseDark = HouseDark;
-            new_human.GetComponent<HumanBrain>().WorkLight = WorkLight;
-            new_human.GetComponent<HumanBrain>().WorkDark = WorkDark;
+            new_human.GetComponent<HumanBrain>().StartDarkMat = HouseDark;
+            new_human.GetComponent<HumanBrain>().EndLightMat = WorkLight;
 			new_human.GetComponent<HumanBrain>().StartBuilding = hs;
             int randomWorkplace = Random.Range(0, WorkplacesParent.transform.childCount);
             new_human.GetComponent<HumanBrain>().EndBuilding = WorkplacesParent.transform.GetChild(randomWorkplace).gameObject;
@@ -54,7 +51,7 @@ public class HumansAtHouses : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (VoronoiDemo.gameState == 0) {
+        if (VoronoiDemo.gameState == 0) { // init world
             //print(housesParent.transform.childCount);
             for (int i = 0; i < housesParent.transform.childCount; i++) {
                 //print("change");
@@ -63,20 +60,40 @@ public class HumansAtHouses : MonoBehaviour
             }
             VoronoiDemo.gameState = 1;
             print("Game Stat = " + VoronoiDemo.gameState);
-        } else if (VoronoiDemo.gameState == 1) {
-            if(Timer == -1) {
+        } else if (VoronoiDemo.gameState == 1) { // spawn humans
+            if(Timer < 0f) {
                 Timer = DelayToStartDay;
-            } else if (Timer > 0) {
-                Timer--;
-            } else if (Timer == 0) {
+            } else if (Timer > 0f) {
+                Timer -= Time.deltaTime;
+                print("Game Stat = " + VoronoiDemo.gameState + " :: Time Left = " + Timer);
+            }
+            if (Timer-Time.deltaTime <= 0f) {
                 for (int i = 0; i < housesParent.transform.childCount; i++) {
                     Transform hs = housesParent.transform.GetChild(i);
                     //changeMaterial(hs.gameObject, HouseDark);
                     createHuman(hs.gameObject);
                 }
                 VoronoiDemo.gameState = 2;
+                Timer = -1f;
                 print("Game Stat = " + VoronoiDemo.gameState);
             }
-        }
+        } else if (VoronoiDemo.gameState == 2) { // humans moving
+            if(Timer < 0f) {
+                Timer = DelayForMovement;
+            } else if (Timer > 0f) {
+                Timer -= Time.deltaTime;
+                print("Game Stat = " + VoronoiDemo.gameState + " :: Time Left = " + Timer);
+            }
+            if (Timer-Time.deltaTime <= 0f) {
+                for (int i = 0; i < HumansParent.transform.childCount; i++) {
+                    NavMeshAgent hm = HumansParent.transform.GetChild(i).GetComponent<NavMeshAgent>();
+                    //changeMaterial(hs.gameObject, HouseDark);
+                    hm.GetComponent<HumanBrain>().timeOut();
+                }
+                VoronoiDemo.gameState = 3;
+                Timer = -1f;
+                print("Game Stat = " + VoronoiDemo.gameState);
+            }
+        } 
     }
 }

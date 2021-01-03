@@ -580,7 +580,8 @@ MonoBehaviour:
   HouseDark: {fileID: 2100000, guid: 6d4b3c4fec53aa25386e490eca66e73f, type: 2}
   WorkLight: {fileID: 2100000, guid: 566c16151310aedd098ef476743ac3af, type: 2}
   WorkDark: {fileID: 2100000, guid: fcf718b14713bd0588bed48be87fc695, type: 2}
-  DelayToStartDay: 100
+  DelayToStartDay: 3
+  DelayForMovement: 30
 --- !u!1 &2035623771
 GameObject:
   m_ObjectHideFlags: 0
