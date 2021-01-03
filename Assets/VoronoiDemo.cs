@@ -27,7 +27,7 @@ public class VoronoiDemo : MonoBehaviour
 	private List<LineSegment> m_delaunayTriangulation;
 	private Texture2D tx;
 
-	public static int gameState = -1;  // -1-notReady / 0-init / 1-AtHome / 2-goingToWork / 3-atWork / 4-goingToHome
+	public static int gameState = -1;  // -1-notReady / 0-init / 1-AtHome / 2-goingToWork / 3-atWork / 4-goingToHome / 5-Finished
 
 	private void generateHouses() {
 		for (int i = 0; i < roadsParent.transform.childCount; i++) {

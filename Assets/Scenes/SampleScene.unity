@@ -164,6 +164,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19673fc5bf771c2d59e711d0f8c4a12b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 963194227}
+  road: {fileID: 8154708573367435691, guid: 81cf850d2682ca006a121efe6b23a73d, type: 3}
+  roadsParent: {fileID: 665535532}
+  house: {fileID: 5899790436525568131, guid: 9aa5a8cf634f96f6bbb6662414933799, type: 3}
+  housesParent: {fileID: 1594264086}
+  WorkplacesParent: {fileID: 417514036}
+  agent: {fileID: 5292096073995851099, guid: beec4d3c0a475bfc09fede37b7e7114f, type: 3}
+  HumansParent: {fileID: 2035623771}
+  WorkDark: {fileID: 2100000, guid: fcf718b14713bd0588bed48be87fc695, type: 2}
+  HouseLight: {fileID: 2100000, guid: 77d38fd0faba71f5f97db5eb3036c343, type: 2}
+  DelayToEndDay: 10
+  DelayForMovement: 30
 --- !u!1 &665535532
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +591,6 @@ MonoBehaviour:
   HouseLight: {fileID: 2100000, guid: 77d38fd0faba71f5f97db5eb3036c343, type: 2}
   HouseDark: {fileID: 2100000, guid: 6d4b3c4fec53aa25386e490eca66e73f, type: 2}
   WorkLight: {fileID: 2100000, guid: 566c16151310aedd098ef476743ac3af, type: 2}
-  WorkDark: {fileID: 2100000, guid: fcf718b14713bd0588bed48be87fc695, type: 2}
   DelayToStartDay: 3
   DelayForMovement: 30
 --- !u!1 &2035623771
