@@ -4,10 +4,8 @@ using Delaunay;
 using Delaunay.Geo;
 using UnityEngine.AI;
 
-public class VoronoiDemo : MonoBehaviour
-{
-	public Camera cam;
-    public Material land;
+public class Voronoi : MonoBehaviour
+{    public Material land;
     public int NPOINTS = 2000, WIDTH = 1000, HEIGHT = 1000;
 	public GameObject road;
 	public GameObject roadsParent;
@@ -18,8 +16,6 @@ public class VoronoiDemo : MonoBehaviour
 	public Material workMaterial;
 	public float spaceBetweenHouses = 0.3f;
 	public NavMeshSurface surface;
-	public NavMeshAgent agent;
-	public GameObject HumansParent;
 	private float [,] map;
     private List<Vector2> m_points;
 	private List<LineSegment> m_edges = null;
@@ -27,7 +23,6 @@ public class VoronoiDemo : MonoBehaviour
 	private List<LineSegment> m_delaunayTriangulation;
 	private Texture2D tx;
 
-	public static int gameState = -1;  // -1-notReady / 0-init / 1-AtHome / 2-goingToWork / 3-atWork / 4-goingToHome / 5-Finished
 
 	private void generateHouses() {
 		for (int i = 0; i < roadsParent.transform.childCount; i++) {
@@ -89,15 +84,6 @@ public class VoronoiDemo : MonoBehaviour
 		{
 			house.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material = mat;
 		}
-	}
-
-	private void createHuman(GameObject hs){
-			Vector3 pos = hs.transform.position + ( hs.transform.forward * ( road.transform.GetChild(0).localScale.z/3 ) );
-			NavMeshAgent new_human = Instantiate(agent, pos, Quaternion.identity);
-			new_human.transform.parent = HumansParent.transform;
-			//new_human.transform.position = hs.transform.position + ( hs.transform.forward * ( road.transform.GetChild(0).localScale.z/3 ) );
-			new_human.GetComponent<Click>().cam = cam;
-			//new_human.GetComponent<click>().general = script;
 	}
 
 	void Start ()
@@ -196,7 +182,8 @@ public class VoronoiDemo : MonoBehaviour
 		generateHouses();
 		/* build the NavMesh */
 		surface.BuildNavMesh();
-		gameState = 0; // Ready to start game logic
+		/* Start Game Logic */
+		HumansManager.gameState = 0; // Ready to start game logic
 	}
 
 	private float [,] createMap() 
