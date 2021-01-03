@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Delaunay;
 using Delaunay.Geo;
+using UnityEngine.AI;
 
 public class VoronoiDemo : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class VoronoiDemo : MonoBehaviour
 	public GameObject housesParent;
 	public Material workMaterial;
 	public float spaceBetweenHouses = 0.3f;
+	public NavMeshSurface surface;
 	private float [,] map;
     private List<Vector2> m_points;
 	private List<LineSegment> m_edges = null;
@@ -174,6 +176,8 @@ public class VoronoiDemo : MonoBehaviour
 
 		/* Generate Buildings */
 		generateHouses();
+		/* build the NavMesh */
+		surface.BuildNavMesh();
 	}
 
 	private float [,] createMap() 
