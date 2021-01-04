@@ -19,9 +19,10 @@ public class HumansManager : MonoBehaviour
     public Material WorkLight;
     public Material WorkDark;
     private float Timer = -1f;
-    public int DelayToStartDay = 3;
-    public int DelayToEndDay = 3;
-    public int DelayForMovement = 30;
+    public int DelayToStartDay = 10;
+    public int DelayToEndDay = 10;
+    public int DelayForSpawn = 5;
+    public int DelayForMovement = 3*60;
 	public static int gameState = -1;  // -1-notReady / 0-init / 1-AtHome / 2-goingToWork / 3-atWork / 4-goingToHome / 5-Finished
     private void createHuman(GameObject startB, GameObject endB, Material startM, Material endM) {
 			Vector3 pos = startB.transform.position + ( startB.transform.forward * ( road.transform.GetChild(0).localScale.z/3 ) );
@@ -31,7 +32,8 @@ public class HumansManager : MonoBehaviour
             new_human.GetComponent<HumanBrain>().EndLightMat = endM;
 			new_human.GetComponent<HumanBrain>().StartBuilding = startB;
             new_human.GetComponent<HumanBrain>().EndBuilding = endB;
-            new_human.GetComponent<HumanBrain>().AgentState = 1;
+            new_human.GetComponent<HumanBrain>().SpawnDelay = DelayForSpawn;
+            new_human.GetComponent<HumanBrain>().AgentState = 0;
 	}
 
     private void changeMaterial(GameObject obj, Material mat) {
@@ -78,7 +80,7 @@ public class HumansManager : MonoBehaviour
                 Timer -= Time.deltaTime;
                 print("Game Stat = " + gameState + " :: Time Left = " + Timer);
             }
-            if (Timer-Time.deltaTime <= 0f) {
+            if (Timer-Time.deltaTime <= 0f || HumansParent.transform.childCount == 0 ) {
                 for (int i = 0; i < HumansParent.transform.childCount; i++) {
                     NavMeshAgent hm = HumansParent.transform.GetChild(i).GetComponent<NavMeshAgent>();
                     //changeMaterial(hs.gameObject, HouseDark);
@@ -114,7 +116,7 @@ public class HumansManager : MonoBehaviour
                 Timer -= Time.deltaTime;
                 print("Game Stat = " + gameState + " :: Time Left = " + Timer);
             }
-            if (Timer-Time.deltaTime <= 0f) {
+            if (Timer-Time.deltaTime <= 0f || HumansParent.transform.childCount == 0 ) {
                 for (int i = 0; i < HumansParent.transform.childCount; i++) {
                     NavMeshAgent hm = HumansParent.transform.GetChild(i).GetComponent<NavMeshAgent>();
                     //changeMaterial(hs.gameObject, HouseDark);

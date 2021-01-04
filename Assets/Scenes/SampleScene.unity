@@ -347,7 +347,8 @@ MonoBehaviour:
   WorkDark: {fileID: 2100000, guid: fcf718b14713bd0588bed48be87fc695, type: 2}
   DelayToStartDay: 5
   DelayToEndDay: 5
-  DelayForMovement: 60
+  DelayForSpawn: 30
+  DelayForMovement: 180
 --- !u!114 &753926937
 MonoBehaviour:
   m_ObjectHideFlags: 0
