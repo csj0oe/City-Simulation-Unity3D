@@ -15,7 +15,6 @@ public class Voronoi : MonoBehaviour
 	public GameObject WorkplacesParent;
 	public Material workMaterial;
 	public float spaceBetweenHouses = 0.3f;
-	public NavMeshSurface surface;
 	private float [,] map;
     private List<Vector2> m_points;
 	private List<LineSegment> m_edges = null;
@@ -23,11 +22,12 @@ public class Voronoi : MonoBehaviour
 	private List<LineSegment> m_delaunayTriangulation;
 	private Texture2D tx;
 
+	public Material test_road;
+
 
 	private void generateHouses() {
 		for (int i = 0; i < roadsParent.transform.childCount; i++) {
 			Transform rd = roadsParent.transform.GetChild(i);
-			
 			float shiftBy1, shiftBy2 = 0;
 			int j = 1;
 			while (shiftBy2 < rd.transform.localScale.x - (house.transform.GetChild(0).localScale.z * 2) ) {
@@ -133,8 +133,10 @@ public class Voronoi : MonoBehaviour
 				 Mathf.RoundToInt(seg.p1.Value.y) >= 0 && Mathf.RoundToInt(seg.p1.Value.y) < HEIGHT &&
 				 map[Mathf.RoundToInt(seg.p0.Value.x), Mathf.RoundToInt(seg.p0.Value.y)] > 0.7 &&
 				 map[Mathf.RoundToInt(seg.p1.Value.x), Mathf.RoundToInt(seg.p1.Value.y)] > 0.7 ) {
+					changeMaterial(go, test_road);
 					Road go_data = go.GetComponent("Road") as Road;
 					go_data.zoneType = 1;
+					go.GetComponent<NavMeshModifier>().area = 3;
 				 }
 			else if ( Mathf.RoundToInt(seg.p0.Value.x) >= 0 && Mathf.RoundToInt(seg.p0.Value.x) < WIDTH &&
 				 Mathf.RoundToInt(seg.p0.Value.y) >= 0 && Mathf.RoundToInt(seg.p0.Value.y) < HEIGHT &&
@@ -181,7 +183,7 @@ public class Voronoi : MonoBehaviour
 		/* Generate Buildings */
 		generateHouses();
 		/* build the NavMesh */
-		surface.BuildNavMesh();
+		roadsParent.GetComponent<NavMeshSurface>().BuildNavMesh();
 		/* Start Game Logic */
 		HumansManager.gameState = 0; // Ready to start game logic
 	}

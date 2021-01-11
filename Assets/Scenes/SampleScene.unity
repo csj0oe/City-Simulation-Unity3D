@@ -376,7 +376,7 @@ MonoBehaviour:
   WorkplacesParent: {fileID: 417514036}
   workMaterial: {fileID: 2100000, guid: fcf718b14713bd0588bed48be87fc695, type: 2}
   spaceBetweenHouses: 0.72
-  surface: {fileID: 665535534}
+  test_road: {fileID: 0}
 --- !u!4 &753926938
 Transform:
   m_ObjectHideFlags: 0
