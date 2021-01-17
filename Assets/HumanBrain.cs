@@ -34,13 +34,28 @@ public class HumanBrain : MonoBehaviour
             if (areaMask > 0) {
                 agent.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
                 agent.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
+                agent.transform.GetChild(2).GetComponent<MeshRenderer>().enabled = false;
+                agent.transform.GetChild(3).GetComponent<MeshRenderer>().enabled = false;
+                agent.transform.GetChild(4).GetComponent<MeshRenderer>().enabled = false;
+                agent.transform.GetChild(5).GetComponent<MeshRenderer>().enabled = false;
+                agent.transform.GetChild(6).GetComponent<MeshRenderer>().enabled = false;
             } else {
                 agent.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
                 agent.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
+                agent.transform.GetChild(2).GetComponent<MeshRenderer>().enabled = true;
+                agent.transform.GetChild(3).GetComponent<MeshRenderer>().enabled = true;
+                agent.transform.GetChild(4).GetComponent<MeshRenderer>().enabled = true;
+                agent.transform.GetChild(5).GetComponent<MeshRenderer>().enabled = true;
+                agent.transform.GetChild(6).GetComponent<MeshRenderer>().enabled = true;
             }
         } else {
             agent.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
             agent.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
+            agent.transform.GetChild(2).GetComponent<MeshRenderer>().enabled = false;
+            agent.transform.GetChild(3).GetComponent<MeshRenderer>().enabled = false;
+            agent.transform.GetChild(4).GetComponent<MeshRenderer>().enabled = false;
+            agent.transform.GetChild(5).GetComponent<MeshRenderer>().enabled = false;
+            agent.transform.GetChild(6).GetComponent<MeshRenderer>().enabled = false;
         }
     }
     private int IndexFromMask(int mask) {

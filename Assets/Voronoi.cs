@@ -12,8 +12,8 @@ public class Voronoi : MonoBehaviour
 	public float freqx = 0.002f, freqy = 0.002f, offsetx = 0f, offsety = 0.6f;
 	public GameObject house;
 	public GameObject housesParent;
+	public GameObject work;
 	public GameObject WorkplacesParent;
-	public Material workMaterial;
 	public float spaceBetweenHouses = 0.3f;
 	private float [,] map;
     private List<Vector2> m_points;
@@ -60,17 +60,18 @@ public class Voronoi : MonoBehaviour
 			Road data = rd.GetComponent("Road") as Road;
 			int zoneType = data.zoneType;
 			if (zoneType == 2) return; // empty zone
-			int houseSize = ( zoneType > 0 ) ? 10 : 1;
-			GameObject new_house_final = Instantiate(house);
-			new_house_final.transform.parent = housesParent.transform;
-			new_house_final.transform.rotation = rot;
-			new_house_final.transform.position = poss;
-			if (houseSize > 1) {
-				new_house_final.transform.localScale = new_house_final.transform.localScale + new Vector3(0, houseSize, 0);
-				changeMaterial(new_house_final, workMaterial);
+			if (zoneType > 0) {
+				GameObject new_house_final = Instantiate(work);
 				new_house_final.transform.parent = WorkplacesParent.transform;
+				new_house_final.transform.rotation = rot;
+				new_house_final.transform.position = poss;
+				//new_house_final.transform.localScale = new_house_final.transform.localScale + new Vector3(0, houseSize, 0);
+				//changeMaterial(new_house_final, workMaterial);
 			} else {
-				//createHuman(new_house_final);
+				GameObject new_house_final = Instantiate(house);
+				new_house_final.transform.parent = housesParent.transform;
+				new_house_final.transform.rotation = rot;
+				new_house_final.transform.position = poss;
 			}
 		} else {
 			//Collider[] x = Physics.OverlapBox(pos, hSz, rot);
@@ -175,10 +176,10 @@ public class Voronoi : MonoBehaviour
 		}*/
 
 		/* Apply pixels to texture */
-		tx = new Texture2D(WIDTH, HEIGHT);
-        land.SetTexture ("_MainTex", tx);
-		tx.SetPixels (pixels);
-		tx.Apply ();
+		//tx = new Texture2D(WIDTH, HEIGHT);
+        //land.SetTexture ("_MainTex", tx);
+		//tx.SetPixels (pixels);
+		//tx.Apply ();
 
 		/* Generate Buildings */
 		generateHouses();

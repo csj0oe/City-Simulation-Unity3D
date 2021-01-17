@@ -5,10 +5,7 @@ using UnityEngine.AI;
 
 public class HumansManager : MonoBehaviour
 {
-    public Camera cam;
     public GameObject road;
-	public GameObject roadsParent;
-	public GameObject house;
 	public GameObject housesParent;
 	public GameObject WorkplacesParent;
 	public NavMeshAgent agent;
@@ -45,10 +42,11 @@ public class HumansManager : MonoBehaviour
     // Update is called once per frame
     void Update() {
         if (gameState == 0) { // init world
+            int randomWorkplace = 0;
             for (int i = 0; i < housesParent.transform.childCount; i++) {
                 GameObject hs = housesParent.transform.GetChild(i).gameObject;
+                randomWorkplace = (randomWorkplace+1)%WorkplacesParent.transform.childCount;
                 //changeMaterial(hs, HouseLight);
-                int randomWorkplace = Random.Range(0, WorkplacesParent.transform.childCount);
                 GameObject eb = WorkplacesParent.transform.GetChild(randomWorkplace).gameObject;
                 hs.GetComponent<Building>().humanHouses.Push(eb);
             }
